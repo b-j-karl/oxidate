@@ -31,20 +31,22 @@ Rust's convention for unit tests is to put them in a `tests` module at the botto
 
 `mod` declares a module, which is a file-like abstraction for grouping related code.
 
+I originally set the return type of `get_num_rows` and `get_num_cols` to `i32`. However, Copilot recommended changing it to `usize`, an unsigned integer type. This makes sense because the number of rows and columns cannot be negative, and `usize` is what is returned by the underlying `csv` crate.
+
 ## One snippet that I found interesting
 ```rust
-fn get_num_cols(csv_path: &Path) -> Result<i32, csv::Error> {
+fn get_num_cols(csv_path: &Path) -> Result<usize, csv::Error> {
     let mut reader = csv::Reader::from_path(csv_path)?;
     // .headers() returns a reference to a StringRecord of the headers. A StringRecord
     // is basically a vector if strings representing a row of the CSV.
-    Ok(reader.headers()?.len() as i32)
+    Ok(reader.headers()?.len())
 }
 ```
 This is basically the first Rust function I have written alone. It uses a lot of concepts I have only just learned about. Here is a quick breakdown of the function:
  - `csv_path: &Path` tells the compiler this function is borrowing `csv_path` instead of taking ownership of it.
- - `-> Result<i32, csv::Error>` tells the compiler this function returns a `Result` type that is either an `i32` or a `csv::Error`.
+ - `-> Result<usize, csv::Error>` tells the compiler this function returns a `Result` type that is either a `usize` or a `csv::Error`.
 - `csv::Reader::from_path(csv_path)?` creates a new CSV reader from the file path. The `?` operator propagates any errors that occur up the call stack.
-- `reader.headers()?.len() as i32` gets the headers of the CSV file, which is a `StringRecord`, and returns its length as an `i32`. The `?` operator again propagates any errors that occur when getting the headers.
+- `reader.headers()?.len()` gets the headers of the CSV file, which is a `StringRecord`, and returns its length as a `usize`. The `?` operator again propagates any errors that occur when getting the headers.
 
 ## Next step
 Implement function to extract CSV schema. The `.headers()` method which I discovered here will be useful.
