@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+
+[lints.clippy]
+# Deny these - they catch real bugs
+suspicious = "deny" # Suspicious code that may be a bug.
+perf = "deny" # Code that is not necessarily wrong, but could be written in a more efficient way.
+correctness = "deny" # Code that is definitely outright wrong or useless.
+
+# Warn on style issues
+style = "warn" # Code that could be more idiomatic, but is not necessarily wrong.
