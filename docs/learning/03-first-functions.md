@@ -25,7 +25,7 @@ The concept of ownership is core to rust, and is what allows rust to have memory
 
 Functions that can fail should return a `Result` type e.g., `Result<i32, std::io::Error>`. This makes the error explicit to the type system. When calling a function that returns a `Result`, you can use the `?` operator to propagate errors up the call stack. The alternative to using `Result` and `?` is to use `.unwrap()`. This causes the programme to panic if an error occurs i.e., it will crash.
 
-The caller of the function that returns a `Result` can call `.unwrap()` on it to either get the successful value or cause a panic if an error occurred. This is only recommeneded for prototyping or when you genuinely want the programme to crash if an error occurs.
+The caller of the function that returns a `Result` can call `.unwrap()` on it to either get the successful value or cause a panic if an error occurred. This is only recommended for prototyping or when you genuinely want the programme to crash if an error occurs.
 
 Rust's convention for unit tests is to put them in a `tests` module at the bottom of the file. The `#[cfg(test)]` is a conditional compilation attribute that tells the compiler to only compile the test code when running tests. The `#[test]` attribute marks a function as a test case.
 
