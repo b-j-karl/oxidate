@@ -1,0 +1,41 @@
+## Goal
+Write 2 functions: one that gets the number of rows in a CSV file, and another that gets the number of columns.
+
+## What I tried
+I started off by configuring `copilot-instructions.md` to be more focused on learning. This turned copilot into an incredibly useful learning tool. I then wrote the `get_num_rows` and learnt about the ownership model, Error handling with `Result` and `?`, and testing conventions in Rust. Copilot was a huge help in explaining these concepts to me. Then, I turned copilot off and wrote the `get_num_cols` function myself.
+
+## What broke
+Nothing. There is not much to break at this point.
+
+## What I learned
+Pass by reference using `&`. If a functions takes a reference to an input variable, the function effectively borrows the value of that parameter. This allows the caller of the function to retain ownership of the variable. IF an `&` is not used, the function takes ownership of the variable and the caller can no longer use it after calling the function. As a rule of thumb, I will always try to "borrow" input parameters to functions using `&` unless I have a specific reason to take ownership of the variable.
+
+The concept of ownership is core to rust, and is what allows rust to have memory safety without a garbage collector.
+
+`cargo-edit` is a super useful dependency management tool like `pip` or  `uv`. It allows you to add dependencies to your project using the command line e.g., `cargo add csv`.
+
+Functions that can fail should return a `Result` type e.g., `Result<i32, std::io::Error>`. This makes the error explicit to the type system. When calling a function that returns a `Result`, you can use the `?` operator to propagate errors up the call stack. The alternative to using `Result` and `?` is to use `.unwrap()`. This causes the programme to panic if an error occurs i.e., it will crash.
+
+The caller of the function that returns a `Result` can call `.unwrap()` on it to either get the successful value or cause a panic if an error occurred. This is only recommeneded for prototyping or when you genuinely want the programme to crash if an error occurs.
+
+Rust's convention for unit tests is to put them in a `tests` module at the bottom of the file. The `#[cfg(test)]` is a conditional compilation attribute that tells the compiler to only compile the test code when running tests. The `#[test]` attribute marks a function as a test case.
+
+`mod` declares a module, which is a file-like abstraction for grouping related code.
+
+## One snippet that I found interesting
+```rust
+fn get_num_cols(csv_path: &Path) -> Result<i32, csv::Error> {
+    let mut reader = csv::Reader::from_path(csv_path)?;
+    // .headers() returns a reference to a StringRecord of the headers. A StringRecord
+    // is basically a vector if strings representing a row of the CSV.
+    Ok(reader.headers()?.len() as i32)
+}
+```
+This is basically the first Rust function I have written alone. It uses a lot of concepts I have only just learned about. Here is a quick breakdown of the function:
+ - `csv_path: &Path` tells the compiler this function is borrowing `csv_path` instead of taking ownership of it.
+ - `-> Result<i32, csv::Error>` tells the compiler this function returns a `Result` type that is either an `i32` or a `csv::Error`.
+- `csv::Reader::from_path(csv_path)?` creates a new CSV reader from the file path. The `?` operator propagates any errors that occur up the call stack.
+- `reader.headers()?.len() as i32` gets the headers of the CSV file, which is a `StringRecord`, and returns its length as an `i32`. The `?` operator again propagates any errors that occur when getting the headers.
+
+## Next step
+Implement function to extract CSV schema. The `.headers()` method which I discovered here will be useful.
