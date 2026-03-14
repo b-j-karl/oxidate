@@ -8,17 +8,17 @@ fn main() {
     println!("Number of columns: {}", num_cols);
 }
 
-fn get_num_rows(csv_path: &Path) -> Result<i32, csv::Error> {
+fn get_num_rows(csv_path: &Path) -> Result<usize, csv::Error> {
     // Create a CSV reader from the file path. A Reader needs to be mutable, because
     // reading from it changes its internal state.
     let mut reader = csv::Reader::from_path(csv_path)?;
-    Ok(reader.records().count() as i32)
+    Ok(reader.records().count())
 }
-fn get_num_cols(csv_path: &Path) -> Result<i32, csv::Error> {
+fn get_num_cols(csv_path: &Path) -> Result<usize, csv::Error> {
     let mut reader = csv::Reader::from_path(csv_path)?;
     // .headers() returns a reference to a StringRecord of the headers. A StringRecord
     // is basically a vector if strings representing a row of the CSV.
-    Ok(reader.headers()?.len() as i32)
+    Ok(reader.headers()?.len())
 }
 
 #[cfg(test)]
@@ -33,7 +33,7 @@ mod tests {
         fn happy_path() {
             let path = Path::new("test_data/sample.csv");
             let result = get_num_rows(path).unwrap();
-            assert_eq!(result, 3); // 3 data rows, header is excluded by default
+            assert_eq!(result, 3_usize); // 3 data rows, header is excluded by default
         }
 
         #[test]
@@ -50,7 +50,7 @@ mod tests {
         fn happy_path() {
             let path = Path::new("test_data/sample.csv");
             let result = get_num_cols(path).unwrap();
-            assert_eq!(result, 3); // 3 columns: name, age, city
+            assert_eq!(result, 3_usize); // 3 columns: name, age, city
         }
         #[test]
         fn file_not_found() {
