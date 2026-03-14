@@ -24,4 +24,4 @@ This single command scaffolds the entire project with the right name, directory 
 
 ## Next step
 
-Add formatting and linting tools to the project.
+Add formatting and linting tools to the project. I want to do this early on, so I can get used to writing code that adheres to Rust's style guidelines from the beginning.
