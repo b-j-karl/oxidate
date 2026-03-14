@@ -3,7 +3,7 @@
 Set up a linter and formatter for the Rust project.
 
 ## What I tried
-I did some research on the state of linters in Rust and found that the most popular one is Clippy. It comes pre-installed with Rust via rustup so I didn't have do do anything to set it up. Clippy has multiple severity levels for its lints:
+I did some research on the state of linters in Rust and found that the most popular one is Clippy. It comes pre-installed with Rust via rustup so I didn't have to do anything to set it up. Clippy has multiple severity levels for its lints:
  - "allow" - the lint is ignored.
  - "warn" - the lint is reported as a warning, but it doesn't prevent compilation.
  - "deny" - the lint is reported as an error, and it prevents compilation.
