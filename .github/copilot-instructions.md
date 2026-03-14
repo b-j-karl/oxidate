@@ -50,7 +50,6 @@ When explaining concepts, link to:
 - clap docs: https://docs.rs/clap/
 - anyhow docs: https://docs.rs/anyhow/
 
-
 ## Examples of Good Interactions
 ### Good:
 Me: "How do I read from stdin or a file?"
