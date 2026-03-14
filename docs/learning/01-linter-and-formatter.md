@@ -7,7 +7,7 @@ I did some research on the state of linters in Rust and found that the most popu
  - "allow" - the lint is ignored.
  - "warn" - the lint is reported as a warning, but it doesn't prevent compilation.
  - "deny" - the lint is reported as an error, and it prevents compilation.
- - "forbid" - the lint is reported as an error, and it prevents compilation. Additionally, it cannot be overridden by a lower severity level in a more specific scope. (to override a lint in rust you can use attributes like `#[allow(lint_name)]` or `#[warn(lint_name)]` on specific modules, functions, or even individual lines of code to change the severity level.)
+ - "forbid" - the lint is reported as an error, and it prevents compilation. Additionally, it cannot be overridden by a lower severity level in a more specific scope. (to override a lint in Rust you can use attributes like `#[allow(lint_name)]` or `#[warn(lint_name)]` on specific modules, functions, or even individual lines of code to change the severity level.)
  Clippy also has lint groups; a concept that is familiar from ruff, the Python linter.
 
 Rust also has a built-in formatter called rustfmt, which is also included with rustup. It can be configured using a rustfmt.toml file in the project directory. Most threads I read recommended minimal configuration for rustfmt, so I decided to only set the edition and max_width fields for now. The edition field specifies the Rust edition to format for, and the max_width field specifies the maximum width of formatted code before it starts breaking lines.
@@ -34,5 +34,4 @@ This is the Clippy configuration I decided to start with. I want compilation to 
 
 
 ## Next step
-
 Set up CI. I at least want the linter and formatter to run on every pull request, so I will set up GitHub Actions to do that. Once I have tests set up, I will also add a step to run the tests in CI.
