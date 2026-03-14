@@ -5,7 +5,16 @@ Write 2 functions: one that gets the number of rows in a CSV file, and another t
 I started off by configuring `copilot-instructions.md` to be more focused on learning. This turned copilot into an incredibly useful learning tool. I then wrote the `get_num_rows` and learnt about the ownership model, Error handling with `Result` and `?`, and testing conventions in Rust. Copilot was a huge help in explaining these concepts to me. Then, I turned copilot off and wrote the `get_num_cols` function myself.
 
 ## What broke
-Nothing. There is not much to break at this point.
+I didn't run `cargo clippy` before committing, which caused the CI to fail. I found one warning repeated twice.
+```
+warning: this expression creates a reference which is immediately dereferenced by the compiler
+ --> src\main.rs:5:33
+  |
+5 |     let num_rows = get_num_rows(&csv_path).unwrap();
+  |                                 ^^^^^^^^^ help: change this to: `csv_path`
+  |
+```
+This was because I was passing a reference to `csv_path` when calling `get_num_rows`, but `get_num_rows` already declared in its function header that it was borrowing `csv_path`. So I was effectively borrowing a reference, which is unnecessary. Basically, if the ampersand is already in the function header, you don't need to use it when calling the function.
 
 ## What I learned
 Pass by reference using `&`. If a functions takes a reference to an input variable, the function effectively borrows the value of that parameter. This allows the caller of the function to retain ownership of the variable. IF an `&` is not used, the function takes ownership of the variable and the caller can no longer use it after calling the function. As a rule of thumb, I will always try to "borrow" input parameters to functions using `&` unless I have a specific reason to take ownership of the variable.

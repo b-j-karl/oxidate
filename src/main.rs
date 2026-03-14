@@ -2,8 +2,8 @@ use std::path::Path;
 
 fn main() {
     let csv_path = Path::new("test_data/sample.csv");
-    let num_rows = get_num_rows(&csv_path).unwrap();
-    let num_cols = get_num_cols(&csv_path).unwrap();
+    let num_rows = get_num_rows(csv_path).unwrap();
+    let num_cols = get_num_cols(csv_path).unwrap();
     println!("Number of rows: {}", num_rows);
     println!("Number of columns: {}", num_cols);
 }
