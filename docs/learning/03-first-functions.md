@@ -17,7 +17,7 @@ warning: this expression creates a reference which is immediately dereferenced b
 This was because I was passing a reference to `csv_path` when calling `get_num_rows`, but `get_num_rows` already declared in its function header that it was borrowing `csv_path`. So I was effectively borrowing a reference, which is unnecessary. Basically, if the ampersand is already in the function header, you don't need to use it when calling the function.
 
 ## What I learned
-Pass by reference using `&`. If a functions takes a reference to an input variable, the function effectively borrows the value of that parameter. This allows the caller of the function to retain ownership of the variable. IF an `&` is not used, the function takes ownership of the variable and the caller can no longer use it after calling the function. As a rule of thumb, I will always try to "borrow" input parameters to functions using `&` unless I have a specific reason to take ownership of the variable.
+Pass by reference using `&`. If a function takes a reference to an input variable, the function effectively borrows the value of that parameter. This allows the caller of the function to retain ownership of the variable. If an `&` is not used, the function takes ownership of the variable and the caller can no longer use it after calling the function. As a rule of thumb, I will always try to "borrow" input parameters to functions using `&` unless I have a specific reason to take ownership of the variable.
 
 The concept of ownership is core to rust, and is what allows rust to have memory safety without a garbage collector.
 
