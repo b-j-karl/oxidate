@@ -9,7 +9,7 @@ My first pipeline failed! The main.rs file that I had filled with "Hello, World!
 
 ## What I learned
 Basic come pre-installed with Rust, which is great. Linting, formatting, and testing tools were all simple `cargo` commands that I could easily add to the CI pipeline.
-I also leanred about the CARGO_TERM_COLOR environment variable, which can be set to "always" to force Cargo to output colored text in CI logs. This makes it easier to read and understand the output of the CI pipeline. I decided to use this for my pipeline.
+I also learned about the CARGO_TERM_COLOR environment variable, which can be set to "always" to force Cargo to output colored text in CI logs. This makes it easier to read and understand the output of the CI pipeline. I decided to use this for my pipeline.
 
 ## One snippet that I found interesting
 Claude suggested using the Swatinem/rust-cache GitHub Action to cache compiled dependencies between runs, which is a great idea to speed up the CI pipeline.
