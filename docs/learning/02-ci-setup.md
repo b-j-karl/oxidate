@@ -5,7 +5,7 @@ Set up a CI pipeline.
 I implemented a very minimal CI pipeline. It just checks that the code compiles, runs the tests, checks that the code is formatted, and runs Clippy.
 
 ## What broke
-Hopefully nothing.
+My first pipeline failed! The main.rs file that I had filled with "Hello, World!" was not formatted according to rustfmt's default settings, so the `cargo fmt -- --check` step failed. I had to run `cargo fmt` locally to fix the formatting issues and then push the changes to get the pipeline to pass.
 
 ## What I learned
 Basic come pre-installed with Rust, which is great. Linting, formatting, and testing tools were all simple `cargo` commands that I could easily add to the CI pipeline.
