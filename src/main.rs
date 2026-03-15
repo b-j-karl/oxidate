@@ -22,7 +22,7 @@ enum ColumnType {
 }
 /// Represents the schema of a CSV column.
 ///
-/// # Arguments
+/// # Fields
 ///
 /// * `name` - The name of the column, as a string.
 /// * `column_type` - The inferred type of the column, as a ColumnType enum.
