@@ -96,7 +96,7 @@ fn infer_column_type(value: &str) -> ColumnType {
         return ColumnType::Float;
     }
     // Otherwise, treat it as a string
-    ColumnType::String;
+    ColumnType::String
 }
 
 #[cfg(test)]
