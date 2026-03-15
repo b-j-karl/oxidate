@@ -5,7 +5,7 @@ Write a function that returns the schema of a CSV file, including the column nam
 First, I decided I would need a data structure to represent the column schema. I created a `ColumnSchema` struct with two fields: `name` and `dtype`. I used an `enum` to represent supported types.
 
 ## What broke
-I had a bug due to PEBCAK:`.all()` on an empty iterator returns `true` (vacuous truth), so an empty string `""` was being classified as `Integer` instead of `String`.
+I had a bug due to PEBCAK: `.all()` on an empty iterator returns `true` (vacuous truth), so an empty string `""` was being classified as `Integer` instead of `String`.
 
 ## What I learned
 I learnt the basic syntax for defining a `struct` and an `enum` in Rust. In writing these objects, I also learnt the proper way to document them using doc comments (`///`). Markdown formatting can be used in doc comments; love it. I decided to go ahead and document the other functions I had already written using doc comments as well. Not sure what the state of practice is in Rust for documentation, but I personally don't see why not.
