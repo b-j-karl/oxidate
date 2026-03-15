@@ -4,11 +4,16 @@ fn main() {
     let csv_path = Path::new("test_data/sample.csv");
     let num_rows = get_num_rows(csv_path).unwrap();
     let num_cols = get_num_cols(csv_path).unwrap();
+    let schema = get_csv_schema(csv_path).unwrap();
     println!("Number of rows: {}", num_rows);
     println!("Number of columns: {}", num_cols);
+    for column in schema {
+        println!("Column: {}, Type: {:?}", column.name, column.column_type);
+    }
 }
 
 /// Supported types for CSV columns.
+#[derive(Debug, PartialEq)]
 enum ColumnType {
     // Only supporting basic types for now
     Integer,
@@ -21,6 +26,7 @@ enum ColumnType {
 ///
 /// * `name` - The name of the column, as a string.
 /// * `column_type` - The inferred type of the column, as a ColumnType enum.
+#[derive(Debug, PartialEq)]
 struct ColumnSchema {
     name: String,
     column_type: ColumnType,
@@ -53,7 +59,44 @@ fn get_num_cols(csv_path: &Path) -> Result<usize, csv::Error> {
 /// # Arguments
 /// * `csv_path` - A reference to a Path object representing the file path of the CSV file.
 fn get_csv_schema(csv_path: &Path) -> Result<Vec<ColumnSchema>, csv::Error> {
-    Ok(vec![])
+    let mut reader = csv::Reader::from_path(csv_path)?;
+    let headers = reader.headers()?.clone(); // Clone the headers to own the data
+    let mut column_schemas = Vec::with_capacity(headers.len());
+
+    // Get the first few row of the CSV to use for type inference
+    let first_row = match reader.records().next() {
+        Some(Ok(record)) => record,           // got a valid row
+        Some(Err(e)) => return Err(e),        // parse error, propagate it
+        None => csv::StringRecord::default(), // no rows, use empty default
+    };
+
+    // Iterate through first_row and headers simultaneously
+    let mut column_type: ColumnType;
+    for (header, value) in headers.iter().zip(first_row.iter()) {
+        column_type = infer_column_type(value);
+        column_schemas.push(ColumnSchema {
+            name: header.to_string(),
+            column_type,
+        });
+    }
+    Ok(column_schemas)
+}
+
+fn infer_column_type(value: &str) -> ColumnType {
+    // Check if the string is empty
+    if value.is_empty() {
+        return ColumnType::String; // Treat empty strings as strings
+    }
+    // Check if the string is all numeric characters
+    if value.chars().all(|c| c.is_digit(10)) {
+        return ColumnType::Integer;
+    }
+    // Check if the string is a valid float
+    if value.parse::<f64>().is_ok() {
+        return ColumnType::Float;
+    }
+    // Otherwise, treat it as a string
+    return ColumnType::String;
 }
 
 #[cfg(test)]
@@ -103,8 +146,67 @@ mod tests {
             let result = get_csv_schema(path).unwrap();
             assert_eq!(
                 result,
-                vec!["name".to_string(), "age".to_string(), "city".to_string()]
+                vec![
+                    ColumnSchema {
+                        name: "name".to_string(),
+                        column_type: ColumnType::String
+                    },
+                    ColumnSchema {
+                        name: "age".to_string(),
+                        column_type: ColumnType::Integer
+                    },
+                    ColumnSchema {
+                        name: "city".to_string(),
+                        column_type: ColumnType::String
+                    }
+                ]
             );
+        }
+    }
+
+    mod test_infer_column_type {
+        use super::*;
+
+        #[test]
+        fn integer_from_whole_number() {
+            let result = infer_column_type("42");
+            assert!(matches!(result, ColumnType::Integer));
+        }
+
+        #[test]
+        fn integer_from_zero() {
+            let result = infer_column_type("0");
+            assert!(matches!(result, ColumnType::Integer));
+        }
+
+        #[test]
+        fn float_from_decimal() {
+            let result = infer_column_type("3.14");
+            assert!(matches!(result, ColumnType::Float));
+        }
+
+        #[test]
+        fn float_from_negative_number() {
+            let result = infer_column_type("-2.5");
+            assert!(matches!(result, ColumnType::Float));
+        }
+
+        #[test]
+        fn string_from_text() {
+            let result = infer_column_type("hello");
+            assert!(matches!(result, ColumnType::String));
+        }
+
+        #[test]
+        fn string_from_empty() {
+            let result = infer_column_type("");
+            assert!(matches!(result, ColumnType::String));
+        }
+
+        #[test]
+        fn string_from_mixed_content() {
+            let result = infer_column_type("abc123");
+            assert!(matches!(result, ColumnType::String));
         }
     }
 }
