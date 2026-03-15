@@ -19,7 +19,7 @@ I learned about 2 new concepts: traits and deriving traits. A trait is a collect
 
 ## One snippet that I found interesting
 
-Handling `Option<Result<T, E>>` from an iterator. `.next()` returns an `Option` which is Rust's way of representing nullable values. Rust forces us to handles every possibility, so we wrote the `match` expression below. It basically says: if `record` exists and is valid, use it; if there's an error, propagate it; if there's no record, use a default value.
+Handling `Option<Result<T, E>>` from an iterator. `.next()` returns an `Option` which is Rust's way of representing nullable values. Rust forces us to handle every possibility, so we wrote the `match` expression below. It basically says: if `record` exists and is valid, use it; if there's an error, propagate it; if there's no record, use a default value.
 
 ```rust
 let first_row = match reader.records().next() {
