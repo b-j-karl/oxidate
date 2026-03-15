@@ -26,12 +26,21 @@ struct ColumnSchema {
     column_type: ColumnType,
 }
 
+/// Returns the number of rows in a CSV file, excluding the header row.
+///
+/// # Arguments
+/// * `csv_path` - A reference to a Path object representing the file path of the CSV file.
 fn get_num_rows(csv_path: &Path) -> Result<usize, csv::Error> {
     // Create a CSV reader from the file path. A Reader needs to be mutable, because
     // reading from it changes its internal state.
     let mut reader = csv::Reader::from_path(csv_path)?;
     Ok(reader.records().count())
 }
+
+/// Returns the number of columns in a CSV file, based on the header row.
+///
+/// # Arguments
+/// * `csv_path` - A reference to a Path object representing the file path of the CSV file.
 fn get_num_cols(csv_path: &Path) -> Result<usize, csv::Error> {
     let mut reader = csv::Reader::from_path(csv_path)?;
     // .headers() returns a reference to a StringRecord of the headers. A StringRecord
@@ -39,6 +48,10 @@ fn get_num_cols(csv_path: &Path) -> Result<usize, csv::Error> {
     Ok(reader.headers()?.len())
 }
 
+/// Returns the schema of a CSV file, which includes the column names and their inferred types.
+///
+/// # Arguments
+/// * `csv_path` - A reference to a Path object representing the file path of the CSV file.
 fn get_csv_schema(csv_path: &Path) -> Result<Vec<ColumnSchema>, csv::Error> {
     Ok(vec![])
 }
