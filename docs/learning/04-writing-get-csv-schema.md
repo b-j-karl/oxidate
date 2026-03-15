@@ -57,4 +57,4 @@ if value.chars().all(|c| c.is_ascii_digit()) {
 Gotcha: `.all()` on an empty iterator returns `true`.
 
 ## Next step
-My single `main.rs` file is getting pretty long and difficult to navigate. It is likely a good time to refactor the code into multiple files. I can take this opportunity to learn a bit about projectr structure in Rust.
+My single `main.rs` file is getting pretty long and difficult to navigate. It is likely a good time to refactor the code into multiple files. I can take this opportunity to learn a bit about project structure in Rust.
