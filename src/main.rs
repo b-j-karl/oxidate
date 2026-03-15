@@ -137,7 +137,7 @@ mod tests {
             assert!(result.is_err()); // should return an error, not panic
         }
     }
-    mod test_get_headers {
+    mod test_get_csv_schema {
         use super::*;
 
         #[test]
@@ -161,6 +161,12 @@ mod tests {
                     }
                 ]
             );
+        }
+        #[test]
+        fn header_only() {
+            let path = Path::new("test_data/header_only.csv");
+            let result = get_csv_schema(path).unwrap();
+            assert_eq!(result, vec![]); // no data rows, so no schema entries
         }
     }
 
