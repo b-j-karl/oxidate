@@ -63,17 +63,19 @@ fn get_csv_schema(csv_path: &Path) -> Result<Vec<ColumnSchema>, csv::Error> {
     let headers = reader.headers()?.clone(); // Clone the headers to own the data
     let mut column_schemas = Vec::with_capacity(headers.len());
 
-    // Get the first few row of the CSV to use for type inference
+    // Get the first row of the CSV to use for type inference
     let first_row = match reader.records().next() {
-        Some(Ok(record)) => record,           // got a valid row
-        Some(Err(e)) => return Err(e),        // parse error, propagate it
-        None => csv::StringRecord::default(), // no rows, use empty default
+        Some(Ok(record)) => Some(record), // got a valid row
+        Some(Err(e)) => return Err(e),    // parse error, propagate it
+        None => None,                     // no data rows
     };
 
-    // Iterate through first_row and headers simultaneously
-    let mut column_type: ColumnType;
-    for (header, value) in headers.iter().zip(first_row.iter()) {
-        column_type = infer_column_type(value);
+    // Iterate through headers, using the first row for type inference if available
+    for (i, header) in headers.iter().enumerate() {
+        let column_type = match &first_row {
+            Some(row) => infer_column_type(&row[i]),
+            None => ColumnType::String, // default to String when no data rows
+        };
         column_schemas.push(ColumnSchema {
             name: header.to_string(),
             column_type,
@@ -166,7 +168,23 @@ mod tests {
         fn header_only() {
             let path = Path::new("test_data/header_only.csv");
             let result = get_csv_schema(path).unwrap();
-            assert_eq!(result, vec![]); // no data rows, so no schema entries
+            assert_eq!(
+                result,
+                vec![
+                    ColumnSchema {
+                        name: "name".to_string(),
+                        column_type: ColumnType::String
+                    },
+                    ColumnSchema {
+                        name: "age".to_string(),
+                        column_type: ColumnType::String
+                    },
+                    ColumnSchema {
+                        name: "city".to_string(),
+                        column_type: ColumnType::String
+                    }
+                ]
+            );
         }
     }
 
