@@ -44,7 +44,7 @@ Okay, 2 snippets that I found interesting.
 Checking if all characters in a string are digits using an iterator chain with a closure:
 
 ```rust
-if value.chars().all(|c| c.is_digit(10)) {
+if value.chars().all(|c| c.is_ascii_digit()) {
     return ColumnType::Integer;
 }
 ```
@@ -52,7 +52,7 @@ if value.chars().all(|c| c.is_digit(10)) {
 - `.chars()` converts the `&str` into an iterator of characters.
 - `.all(|c| ...)` returns `true` only if the closure returns `true` for every element.
 - `|c|` is a closure (anonymous function), `c` is each character in turn. This is sort of like using a lambda function in `map` or `filter` in Python.
-- `c.is_digit(10)` checks if the character is a digit in base 10.
+- `c.is_ascii_digit()` checks if the character is an ASCII digit.
 
 Gotcha: `.all()` on an empty iterator returns `true`.
 

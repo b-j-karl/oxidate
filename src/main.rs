@@ -88,7 +88,7 @@ fn infer_column_type(value: &str) -> ColumnType {
         return ColumnType::String; // Treat empty strings as strings
     }
     // Check if the string is all numeric characters
-    if value.chars().all(|c| c.is_digit(10)) {
+    if value.chars().all(|c| c.is_ascii_digit()) {
         return ColumnType::Integer;
     }
     // Check if the string is a valid float
