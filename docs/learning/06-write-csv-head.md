@@ -5,7 +5,7 @@ Implement a function that extracts the first n rows of a CSV file, and returns t
 I simply wrote and tested the function this time around, with some help from Copilot for finding the relevant APIs to use.
 
 ## What broke
-Initially, I forgot the make the new function public. I have to do this for it to be accessible from `main.rs`.
+Initially, I forgot to make the new function public. I have to do this for it to be accessible from `main.rs`.
 
 ## What I learned
 - `.take(n)` is a method that works on iterators, which allows you to take the first `n` items from the iterator.
