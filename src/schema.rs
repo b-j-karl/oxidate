@@ -1,3 +1,6 @@
+//! Data structures for this project. This file should not contain any internal
+//! dependencies.
+
 /// Supported types for CSV columns.
 #[derive(Debug, PartialEq)]
 pub enum ColumnType {
