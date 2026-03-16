@@ -71,6 +71,38 @@ fn infer_column_type(value: &str) -> ColumnType {
     ColumnType::String
 }
 
+/// Read the header and first `n` data rows of a CSV file and return them as `Vec<Vec<String>>`.
+///
+/// # Arguments
+/// * `csv_path` - A reference to a `Path` object representing the file path of the CSV file.
+/// * `n` - The maximum number of data rows (excluding the header) to read from the CSV file.
+///
+/// # Returns
+/// On success, returns `Ok(rows)` where `rows` is a `Vec<Vec<String>>`:
+/// * `rows[0]` is the header row.
+/// * `rows[1..]` are up to `n` data rows from the CSV.
+/// * If the CSV file has fewer than `n` data rows, all available data rows are returned.
+pub fn csv_head(csv_path: &Path, n: usize) -> Result<Vec<Vec<String>>, csv::Error> {
+    let mut reader = csv::Reader::from_path(csv_path)?;
+
+    // Clamp n to the number of data rows if the CSV has fewer than n
+    let csv_length = get_num_rows(csv_path)?;
+    let n = n.min(csv_length);
+
+    // We need to clone here to avoid holding a mutable and immutable reference on the reader at the same time.
+    let headers = reader.headers()?.clone();
+    let mut head = Vec::with_capacity(n + 1);
+
+    head.push(headers.iter().map(|s| s.to_string()).collect()); // Add headers as the first row
+    for result in reader.records().take(n) {
+        let record = result?; // Propagate any errors while reading records
+
+        // Convert the StringRecords to Vec<String> and push to rows
+        head.push(record.iter().map(|s| s.to_string()).collect());
+    }
+    Ok(head)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -201,6 +233,58 @@ mod tests {
         fn string_from_mixed_content() {
             let result = infer_column_type("abc123");
             assert!(matches!(result, ColumnType::String));
+        }
+    }
+    mod test_csv_head {
+        use super::*;
+
+        #[test]
+        fn happy_path() {
+            let path = Path::new("test_data/sample.csv");
+            let result = csv_head(path, 2).unwrap();
+            assert_eq!(
+                result,
+                vec![
+                    vec!["name".to_string(), "age".to_string(), "city".to_string()], // headers
+                    vec![
+                        "Anahera".to_string(),
+                        "30".to_string(),
+                        "Auckland".to_string()
+                    ],
+                    vec![
+                        "Ben".to_string(),
+                        "25".to_string(),
+                        "Wellington".to_string()
+                    ]
+                ]
+            );
+        }
+        #[test]
+        fn file_not_found() {
+            let path = Path::new("test_data/nonexistent.csv");
+            let result = csv_head(path, 2);
+            assert!(result.is_err()); // should return an error, not panic
+        }
+        #[test]
+        fn zero_rows() {
+            let path = Path::new("test_data/sample.csv");
+            let result = csv_head(path, 0).unwrap();
+            assert_eq!(
+                result,
+                vec![vec![
+                    "name".to_string(),
+                    "age".to_string(),
+                    "city".to_string()
+                ]]
+            )
+        }
+        #[test]
+        fn n_gt_csv_length() {
+            let path = Path::new("test_data/sample.csv");
+            let result = csv_head(path, 10).unwrap();
+
+            // There should just be 4 vectors inside the main outer vector
+            assert_eq!(result.len(), 4); // 3 data rows + 1 header row
         }
     }
 }
