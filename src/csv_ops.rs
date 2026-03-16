@@ -71,6 +71,37 @@ fn infer_column_type(value: &str) -> ColumnType {
     ColumnType::String
 }
 
+/// Read the first n rows of a CSV file and return them as a vector of StringRecords.
+///
+/// # Arguments
+/// * `csv_path` - A reference to a Path object representing the file path of the CSV file.
+/// * `n` - The number of rows to read from the CSV file.
+///
+/// # Returns
+/// * `Ok(Some(StringRecord))` - If the CSV file has at least n rows, returns the first
+///    n rows as a vector of Strings. If the CSV file has fewer than n rows, returns
+///    all available rows.
+fn csv_head(csv_path: &Path, n: usize) -> Result<Vec<Vec<String>>, csv::Error> {
+    let mut reader = csv::Reader::from_path(csv_path)?;
+
+    // Fix n the number of rows in CSV if number of rows is less than n
+    let csv_length = get_num_rows(csv_path)?;
+    let n = n.min(csv_length);
+
+    // We need to clone here to avoid holding a mutable and immutable reference on the reader at the same time.
+    let headers = reader.headers()?.clone();
+    let mut head = Vec::with_capacity(n + 1);
+
+    head.push(headers.iter().map(|s| s.to_string()).collect()); // Add headers as the first row
+    for result in reader.records().take(n) {
+        let record = result?; // Propagate any errors while reading records
+
+        // Convert the StringRecords to Vec<String> and push to rows
+        head.push(record.iter().map(|s| s.to_string()).collect());
+    }
+    Ok(head)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
