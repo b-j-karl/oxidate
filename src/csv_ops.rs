@@ -81,7 +81,7 @@ fn infer_column_type(value: &str) -> ColumnType {
 /// On success, returns `Ok(rows)` where `rows` is a `Vec<Vec<String>>`:
 /// * `rows[0]` is the header row.
 /// * `rows[1..]` are up to `n` data rows from the CSV.
-/// If the CSV file has fewer than `n` data rows, all available data rows are returned.
+/// * If the CSV file has fewer than `n` data rows, all available data rows are returned.
 pub fn csv_head(csv_path: &Path, n: usize) -> Result<Vec<Vec<String>>, csv::Error> {
     let mut reader = csv::Reader::from_path(csv_path)?;
 
