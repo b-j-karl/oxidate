@@ -85,7 +85,7 @@ fn infer_column_type(value: &str) -> ColumnType {
 pub fn csv_head(csv_path: &Path, n: usize) -> Result<Vec<Vec<String>>, csv::Error> {
     let mut reader = csv::Reader::from_path(csv_path)?;
 
-    // Fix n the number of rows in CSV if number of rows is less than n
+    // Clamp n to the number of data rows if the CSV has fewer than n
     let csv_length = get_num_rows(csv_path)?;
     let n = n.min(csv_length);
 
