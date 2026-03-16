@@ -234,4 +234,56 @@ mod tests {
             assert!(matches!(result, ColumnType::String));
         }
     }
+    mod test_csv_head {
+        use super::*;
+
+        #[test]
+        fn happy_path() {
+            let path = Path::new("test_data/sample.csv");
+            let result = csv_head(path, 2).unwrap();
+            assert_eq!(
+                result,
+                vec![
+                    vec!["name".to_string(), "age".to_string(), "city".to_string()], // headers
+                    vec![
+                        "Anahera".to_string(),
+                        "30".to_string(),
+                        "Auckland".to_string()
+                    ],
+                    vec![
+                        "Ben".to_string(),
+                        "25".to_string(),
+                        "Wellington".to_string()
+                    ]
+                ]
+            );
+        }
+        #[test]
+        fn file_not_found() {
+            let path = Path::new("test_data/nonexistent.csv");
+            let result = csv_head(path, 2);
+            assert!(result.is_err()); // should return an error, not panic
+        }
+        #[test]
+        fn zero_rows() {
+            let path = Path::new("test_data/sample.csv");
+            let result = csv_head(path, 0).unwrap();
+            assert_eq!(
+                result,
+                vec![vec![
+                    "name".to_string(),
+                    "age".to_string(),
+                    "city".to_string()
+                ]]
+            )
+        }
+        #[test]
+        fn n_gt_csv_length() {
+            let path = Path::new("test_data/sample.csv");
+            let result = csv_head(path, 10).unwrap();
+
+            // There should just be 4 vectors inside the main outer vector
+            assert_eq!(result.len(), 4); // 3 data rows + 1 header row
+        }
+    }
 }
