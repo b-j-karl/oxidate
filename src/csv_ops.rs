@@ -79,9 +79,9 @@ fn infer_column_type(value: &str) -> ColumnType {
 ///
 /// # Returns
 /// * `Ok(Some(StringRecord))` - If the CSV file has at least n rows, returns the first
-///    n rows as a vector of Strings. If the CSV file has fewer than n rows, returns
-///    all available rows.
-fn csv_head(csv_path: &Path, n: usize) -> Result<Vec<Vec<String>>, csv::Error> {
+///   n rows as a vector of Strings. If the CSV file has fewer than n rows, returns
+///   all available rows.
+pub fn csv_head(csv_path: &Path, n: usize) -> Result<Vec<Vec<String>>, csv::Error> {
     let mut reader = csv::Reader::from_path(csv_path)?;
 
     // Fix n the number of rows in CSV if number of rows is less than n
