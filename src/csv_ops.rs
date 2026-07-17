@@ -2,6 +2,70 @@ use std::path::Path;
 
 use crate::schema::{ColumnSchema, ColumnType};
 
+pub fn inspect(csv_path: &Path) -> Result<(), csv::Error> {
+    let num_rows = get_num_rows(csv_path)?;
+    let num_cols = get_num_cols(csv_path)?;
+    let schema = get_csv_schema(csv_path)?;
+    let sample = csv_head(csv_path, 5)?;
+
+    // Extract just the filename from the path, falling back to the full path
+    let filename = csv_path
+        .file_name() // OsStr not always valud UTF-8
+        .map(|f| f.to_string_lossy().to_string())
+        .unwrap_or_else(|| csv_path.to_string_lossy().to_string());
+
+    println!("File: {}", filename);
+    println!("Rows: {}", num_rows);
+    println!("Columns: {}", num_cols);
+    println!();
+
+    println!("Schema:");
+    for (i, column) in schema.iter().enumerate() {
+        println!("  [{}] {}", i, column.name);
+    }
+    println!();
+
+    let n_sample = sample.len().saturating_sub(1); // exclude header from count
+    println!("Sample (first {} rows):", n_sample);
+    print_aligned_table(&sample);
+
+    Ok(())
+}
+
+/// Prints rows as a left-aligned, column-padded table.
+///
+/// Calculates the maximum width of each column across all rows, then pads
+/// each cell to that width using Rust's `{:<width$}` format specifier.
+fn print_aligned_table(rows: &[Vec<String>]) {
+    if rows.is_empty() {
+        return;
+    }
+
+    // Find the maximum width needed for each column
+    let num_cols = rows[0].len();
+    let col_widths: Vec<usize> = (0..num_cols)
+        // For each column, find the maximum length string inside of it
+        .map(|col| {
+            rows.iter()
+                .filter_map(|row| row.get(col))
+                .map(|cell| cell.len())
+                .max()
+                .unwrap_or(0)
+        })
+        .collect();
+
+    // Print each row with cells padded to their column's max width
+    for row in rows {
+        let line: String = row
+            .iter()
+            .enumerate()
+            .map(|(i, cell)| format!("{:<width$}", cell, width = col_widths[i]))
+            .collect::<Vec<_>>()
+            .join("  ");
+        println!("{}", line);
+    }
+}
+
 /// Returns the number of rows in a CSV file, excluding the header row.
 ///
 /// # Arguments
